@@ -1,0 +1,40 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #c9b8a8;
+}
+
+#c {
+  width: 60%;
+  display: block;
+  border: 3px solid red;
+}
+
+#controls{
+    border: 3px solid green;
+    display: block;
+    width: 40%;
+    padding: 20px;
+}
+
+#editor{
+    margin: auto;
+    margin-top: 30px;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: row;
+    border: 3px solid black;
+}
+
+#colour1:hover{
+    cursor: pointer;
+}
+
+#colour2:hover{
+    cursor: pointer;
+}
+
+#colour3:hover{
+    cursor: pointer;
+}
