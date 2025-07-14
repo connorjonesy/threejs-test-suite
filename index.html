@@ -15,11 +15,19 @@
             <label for="colour2">Cube 2 colour:</label> <br>
             <input type="color" id="colour2" value="#007bff"> <br> <br>
             <label for="colour3">Cube 3 colour:</label> <br>
-            <input type="color" id="colour3" value="#ff00a2">
+            <input type="color" id="colour3" value="#ff00a2"> <br> <br>
+            <label for="metal">Give 'er some metallic qualities</label>
+            <input type="checkbox" id="metal"> <br> <br>
+
+            <!-- TODO:: save n load -->
+            <input type="button" value="Save Preset" id="save_preset_btn">
+            <input type="button" value="Load Preset" id="load_preset_btn">
         </div>
         <canvas id="c"></canvas>
     </div>
     <script type="module" src="/main.js"></script>
+    <script type="module" src="initmodule.js"></script>
+    <script type="module" src="editor.js"></script>
 </body>
 
 </html>
