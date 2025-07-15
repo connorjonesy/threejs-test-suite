@@ -35,3 +35,36 @@ document.getElementById('metal').addEventListener('change', (e) => {
         console.log("Checkbox is not checked");
     }
 });
+
+
+//TODO:: attach this to the save button
+fetch('http://localhost:8000/save', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ 
+        cube1_colour: '#caac25ff',
+        cube2_colour: '#007bff',
+        cube3_colour: '#ff00a2'
+    })
+})
+.then(async response => {
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+    }
+    return response.json();
+})
+.then(data => save_alert(data)) //html pop up success alert
+.catch(error => console.error('Error:', error));
+
+//TODO:: write this correctly
+function save_alert(data){
+    if(1 > 0){ //data status = success, succ_save popup
+        console.log("placeholder");
+    }else{ // data status failed, fail_save popup
+
+    }
+}
