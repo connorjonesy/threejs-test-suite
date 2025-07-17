@@ -1,5 +1,6 @@
 # three.js test suite
+Local web server
 
-Customizable UI to test different aspects of your 3D model in threejs
+Test, save, and load different 3D models, mesh materials, scene lighting, shading, etc. in threejs
 
 WIP

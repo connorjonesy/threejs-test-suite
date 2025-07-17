@@ -45,7 +45,7 @@ fetch('http://localhost:8000/save', {
         'Content-Type': 'application/json',
     },
     body: JSON.stringify({ 
-        cube1_colour: '#caac25ff',
+        cube1_colour: '#caac25ff', //probably will be like #aaaaaa
         cube2_colour: '#007bff',
         cube3_colour: '#ff00a2'
     })
@@ -57,11 +57,33 @@ fetch('http://localhost:8000/save', {
     }
     return response.json();
 })
-.then(data => save_alert(data)) //html pop up success alert
+.then(data => succ_alert(data)) //html pop up success alert
+.catch(error => console.error('Error:', error));
+
+
+//TODO:: write this properly
+fetch('http://localhost:8000/load', {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ 
+
+    })
+})
+.then(async response => {
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+    }
+    return response.json();
+})
+.then(data => succ_alert(data)) //html pop up success alert
 .catch(error => console.error('Error:', error));
 
 //TODO:: write this correctly
-function save_alert(data){
+function succ_alert(data){
     if(1 > 0){ //data status = success, succ_save popup
         console.log("placeholder");
     }else{ // data status failed, fail_save popup

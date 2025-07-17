@@ -1,6 +1,6 @@
 # Server
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from database import init_db #, save_preset, load_preset
+from database import *
 import json
 
 
@@ -14,9 +14,39 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', '0')
         self.end_headers()
 
-
+    #maybe fix...
     def do_GET(self):
-        print("test")
+        if self.path == '/load':
+            try:
+                if '?' in self.path:
+                    from urllib import parse
+                    query_params = parse.parse_qs(parse.urlsplit(self.path).query)
+                    preset_name = query_params.get('preset', ['default'])[0]
+                    print(f"Loading preset: {preset_name}")
+                
+                    # Retrieve data from db
+                    cube_data = load_preset(preset_name)
+                    
+                    response_body = json.dumps({
+                        'cube1_colour': cube_data.get('color', '#ff00a2'),
+                        'status': 'success'
+                    }).encode('utf-8')
+                    
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', 'http://localhost:5173')
+                    self.send_header('Content-Length', str(len(response_body)))
+                    self.end_headers()
+                    self.wfile.write(response_body)
+                
+            except Exception as e:
+                error_msg = json.dumps({'error': str(e), 'status': 'error'}).encode('utf-8')
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', 'http://localhost:5173')
+                self.send_header('Content-Length', str(len(error_msg)))
+                self.end_headers()
+                self.wfile.write(error_msg)
 
 
     def do_POST(self):
@@ -33,6 +63,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 cube3_col = data['cube3_colour']
 
                 #TODO::save data in db
+                save_preset(cube1_col)
 
                 response_body = json.dumps({'status': 'success'}).encode('utf-8')
                 self.send_response(200)
