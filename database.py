@@ -6,7 +6,7 @@ def init_db():
 
     init_cubes_table = """CREATE TABLE IF NOT EXISTS cubes (
         cube_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        color TEXT NOT NULL,
+        colour TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );"""
 
@@ -20,10 +20,10 @@ def init_db():
     init_preset_cubes_table = """CREATE TABLE IF NOT EXISTS preset_cubes (
         preset_id INTEGER NOT NULL,
         cube_id INTEGER NOT NULL,
-        position INTEGER NOT NULL CHECK (position IN (1, 2, 3)),  # the ORDER of the cubes, only allow 3 positions
-        FOREIGN KEY (preset_id) REFERENCES presets(preset_id) ON DELETE CASCADE,
+        position INTEGER NOT NULL CHECK (position IN (1, 2, 3)),
+        FOREIGN KEY (preset_id) REFERENCES presets(preset_id) ON DELETE CASCADE, 
         FOREIGN KEY (cube_id) REFERENCES cubes(cube_id) ON DELETE RESTRICT,
-        PRIMARY KEY (preset_id, position)  # Ensures each preset has only one cube per position
+        PRIMARY KEY (preset_id, position)
     );"""
 
     cursor.execute(init_cubes_table)
@@ -44,6 +44,7 @@ def init_db():
     cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_2_id,default_cube_2_colour))
     cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_3_id,default_cube_3_colour))
 
+    cursor.execute(init_preset_cubes_table)
     cursor.executemany("INSERT INTO preset_cubes (preset_id, cube_id, position) VALUES (?, ?, ?);",
                   [(default_preset_id, default_cube_1_id, 1),
                    (default_preset_id, default_cube_2_id, 2),
@@ -56,7 +57,7 @@ def load_preset(preset_name):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
     query = """
-    SELECT presets.preset_name, cubes.cube_id, cubes.color, preset_cubes.position
+    SELECT presets.preset_name, cubes.cube_id, cubes.colour, preset_cubes.position
     FROM presets
     JOIN preset_cubes ON presets.preset_id = preset_cubes.preset_id
     JOIN cubes ON preset_cubes.cube_id = cubes.cube_id
@@ -71,14 +72,32 @@ def load_preset(preset_name):
     
     preset = {
         'name': rows[0][0],
-        'cube1': {'id': rows[0][1], 'color': rows[0][2], 'size': rows[0][3]},
-        'cube2': {'id': rows[1][1], 'color': rows[1][2], 'size': rows[1][3]},
-        'cube3': {'id': rows[2][1], 'color': rows[2][2], 'size': rows[2][3]}
+        'cube1': {'id': rows[0][1], 'colour': rows[0][2]},
+        'cube2': {'id': rows[1][1], 'colour': rows[1][2]},
+        'cube3': {'id': rows[2][1], 'colour': rows[2][2]}
     }
     connection.commit()
     connection.close()
     return preset
 
 
-def save_preset():
-    print("test")
+def save_preset(preset_name, colour1, colour2, colour3):
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+
+    cursor.execute("INSERT INTO presets (preset_name) VALUES (?);", (preset_name,))
+    preset_id = cursor.lastrowid
+    cursor.execute("INSERT INTO cubes (colour) VALUES (?);", (colour1,))
+    cube1_id = cursor.lastrowid
+    cursor.execute("INSERT INTO cubes (colour) VALUES (?);", (colour2,))
+    cube2_id = cursor.lastrowid
+    cursor.execute("INSERT INTO cubes (colour) VALUES (?);", (colour3,))
+    cube3_id = cursor.lastrowid
+    
+    cursor.executemany("INSERT INTO preset_cubes (preset_id, cube_id, position) VALUES (?, ?, ?);",
+                  [(preset_id, cube1_id, 1),
+                   (preset_id, cube2_id, 2),
+                   (preset_id, cube3_id, 3)]) 
+
+    connection.commit()
+    connection.close()

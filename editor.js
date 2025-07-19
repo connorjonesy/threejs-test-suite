@@ -37,6 +37,9 @@ document.getElementById('metal').addEventListener('change', (e) => {
 });
 
 
+//name for testing
+const preset_name = 'first_preset';
+
 //TODO:: attach this to the save button
 fetch('http://localhost:8000/save', {
     method: 'POST',
@@ -45,9 +48,10 @@ fetch('http://localhost:8000/save', {
         'Content-Type': 'application/json',
     },
     body: JSON.stringify({ 
-        cube1_colour: '#caac25ff', //probably will be like #aaaaaa
-        cube2_colour: '#007bff',
-        cube3_colour: '#ff00a2'
+        'name': preset_name,
+        'cube1_colour': cube1_colour, //probably will be like #aaaaaa
+        'cube2_colour': cube2_colour,
+        'cube3_colour': cube3_colour
     })
 })
 .then(async response => {
@@ -61,16 +65,12 @@ fetch('http://localhost:8000/save', {
 .catch(error => console.error('Error:', error));
 
 
-//TODO:: write this properly
-fetch('http://localhost:8000/load', {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ 
+const url = new URL('http://localhost:8000/load');
+url.searchParams.append('preset_name', preset_name); // like this http://localhost:8000/load?preset_name=preset_value
 
-    })
+fetch(url.toString(), {
+    method: 'GET',
+    mode: 'cors'
 })
 .then(async response => {
     if (!response.ok) {
@@ -85,8 +85,8 @@ fetch('http://localhost:8000/load', {
 //TODO:: write this correctly
 function succ_alert(data){
     if(1 > 0){ //data status = success, succ_save popup
-        console.log("placeholder");
+        console.log("placeholder1");
     }else{ // data status failed, fail_save popup
-
+        console.log("placeholder2");
     }
 }

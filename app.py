@@ -9,26 +9,29 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.protocol_version = 'HTTP/1.1'
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', 'http://localhost:5173')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.send_header('Content-Length', '0')
+        self.send_header('Content-Length', '0') #options responses do not contain body data
         self.end_headers()
 
-    #maybe fix...
+    
     def do_GET(self):
         if self.path == '/load':
             try:
                 if '?' in self.path:
                     from urllib import parse
-                    query_params = parse.parse_qs(parse.urlsplit(self.path).query)
-                    preset_name = query_params.get('preset', ['default'])[0]
+                    query_params = parse.parse_qs(parse.urlsplit(self.path).query) #parse query into dictionary
+                    preset_name = query_params.get('preset_name', ['default'])[0]
                     print(f"Loading preset: {preset_name}")
                 
                     # Retrieve data from db
                     cube_data = load_preset(preset_name)
                     
                     response_body = json.dumps({
-                        'cube1_colour': cube_data.get('color', '#ff00a2'),
+                        'name' : cube_data['name'],
+                        'cube1_colour' : cube_data['cube1']['colour'],
+                        'cube2_colour' : cube_data['cube2']['colour'],
+                        'cube3_colour' : cube_data['cube3']['colour'],
                         'status': 'success'
                     }).encode('utf-8')
                     
@@ -58,12 +61,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                 data = json.loads(post_data)
                 print(f"Received: {data}")
                 
+                preset_name = data['preset_name']
                 cube1_col = data['cube1_colour']
                 cube2_col = data['cube2_colour']
                 cube3_col = data['cube3_colour']
-
-                #TODO::save data in db
-                save_preset(cube1_col)
+                save_preset( preset_name, cube1_col, cube2_col, cube3_col)
 
                 response_body = json.dumps({'status': 'success'}).encode('utf-8')
                 self.send_response(200)
