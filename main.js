@@ -1,31 +1,18 @@
-//import * as THREE from 'three';
-import { getRenderer, getCubes, getControls, getScene, getCamera} from './initmodule.js';
+import Editor from './editor.js';
+import Scene from './scene.js';
 
-function resizeRendererToDisplaySize(renderer) {
-    const canvas = renderer.domElement;
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    const needResize = canvas.width !== width || canvas.height !== height;
-    if (needResize) {
-    renderer.setSize(width, height, false);
-    }
-    return needResize;
+
+class Main {
+  constructor() {
+    this.scene = new Scene();
+    this.editor = new Editor(this.scene);
+    this.animate();
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    this.scene.update();
+  }
 }
 
-
-function animate() {
-    requestAnimationFrame(animate);
-    if (resizeRendererToDisplaySize(getRenderer())) {
-        const canvas = getRenderer().domElement;
-        getCamera().aspect = canvas.clientWidth / canvas.clientHeight;
-        getCamera().updateProjectionMatrix();
-    }
-    getCubes().forEach((cube) => {
-        cube.rotation.x += 0.005;
-        cube.rotation.y += 0.005;
-    });
-
-    getControls().update();
-    getRenderer().render(getScene(), getCamera());
-}
-animate();
+new Main(); //start the app

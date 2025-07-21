@@ -18,6 +18,8 @@
             <input type="color" id="colour3" value="#ff00a2"> <br> <br>
             <label for="metal">Give 'er some metallic qualities</label>
             <input type="checkbox" id="metal"> <br> <br>
+            <label for="preset_name">Give 'er a name: </label>
+            <input type="text" id="preset_name">
             <input type="button" value="Save Preset" id="save_preset_btn">
             <input type="button" value="Load Preset" id="load_preset_btn">
             <p id="succ_save" hidden>Your preset has been saved successfully</p>
@@ -25,8 +27,16 @@
         </div>
         <canvas id="c"></canvas>
     </div>
+    <div id="modal">
+        <div id="modal_content">
+            <span id="close">&times;</span>
+            <h2>Load Preset</h2>
+            <hr>
+            <p id="nullpresets">No presets have been saved yet...</p>
+        </div>
+    </div>
     <script type="module" src="/main.js"></script>
-    <script type="module" src="initmodule.js"></script>
+    <script type="module" src="scene.js"></script>
     <script type="module" src="editor.js"></script>
 </body>
 
