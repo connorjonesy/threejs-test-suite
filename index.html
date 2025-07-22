@@ -22,17 +22,29 @@
             <input type="text" id="preset_name">
             <input type="button" value="Save Preset" id="save_preset_btn">
             <input type="button" value="Load Preset" id="load_preset_btn">
-            <p id="succ_save" hidden>Your preset has been saved successfully</p>
-            <p id="fail_save" hidden>Your preset has failed to save... try again</p>
         </div>
         <canvas id="c"></canvas>
     </div>
-    <div id="modal">
-        <div id="modal_content">
-            <span id="close">&times;</span>
+        <div id="savemodal" class="modal">
+        <div class="modal_content">
+            <span class="close">&times;</span>
+            <div id="succsave">
+                <h2>Preset Saved Successfully: </h2>
+                <p>Congratulations, friend</p>
+            </div>
+            <div id="failedsave" style="display: none;">
+                <p>Error: Please enter a name to save the preset!</p>
+            </div>
+        </div>
+    </div>
+    <div id="loadmodal" class="modal">
+        <div class="modal_content">
+            <span class="close">&times;</span>
             <h2>Load Preset</h2>
             <hr>
-            <p id="nullpresets">No presets have been saved yet...</p>
+            <div id="nullpresets" style="display: none;">No presets have been saved yet...</div>
+            <div id="somepresets"></div>
+            
         </div>
     </div>
     <script type="module" src="/main.js"></script>

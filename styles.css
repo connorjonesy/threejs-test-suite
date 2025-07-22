@@ -2,6 +2,7 @@ html, body {
   height: 100%;
   margin: 0;
   background-color: #c9b8a8;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #c {
@@ -41,7 +42,7 @@ html, body {
 }
 
 
-#modal {
+.modal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -55,7 +56,7 @@ html, body {
   background-color: rgba(0,0,0,0.4);
 }
 
-#modal_content {
+.modal_content {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
@@ -65,15 +66,15 @@ html, body {
 }
 
 
-#close {
+.close {
   color: #aaaaaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
 
-#close:hover,
-#close:focus {
+.close:hover,
+.close:focus {
   color: #000;
   text-decoration: none;
   cursor: pointer;

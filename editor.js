@@ -5,7 +5,11 @@ export default class Editor {
         this.scene = scene;
         this.initColorPickers();
         this.initMetalness();
+        this.initSaveButton();
         this.initLoadButton();
+        this.initModalHandlers();
+        this.saved_presets = []; //string names
+        this.testfunction();
     }
     initColorPickers() {
         document.getElementById('colour1').addEventListener('input', (e) => {
@@ -40,22 +44,71 @@ export default class Editor {
         });
     }
 
-    initLoadButton() {
-        document.getElementById('load_preset_btn').addEventListener('click', () => { this.popUp() });
+    initSaveButton() {
+        document.getElementById('save_preset_btn').addEventListener('click', () => { this.savePopUp() });
     }
 
-    popUp() {
-        let modal = document.getElementById("modal");
-        modal.style.display = "block";
-        //if(presets.length == 0)
-        document.getElementById('close').onclick = function () {
-            modal.style.display = "none";
-        }
-        window.onclick = function (event) {
-            if (event.target == modal) {
+    initLoadButton() {
+        document.getElementById('load_preset_btn').addEventListener('click', () => { this.loadPopUp() });
+    }
+
+    initModalHandlers() {
+        let modallength = document.getElementsByClassName("modal").length; 
+        for(let i=0; i < modallength; i++){
+            let modal = document.getElementsByClassName("modal")[i];
+            document.getElementsByClassName("close")[i].onclick = function() {
                 modal.style.display = "none";
             }
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
         }
+
+    }
+
+    savePopUp() {
+        let modal = document.getElementsByClassName("modal")[0];
+        let preset_name = document.getElementById('preset_name').value;
+        
+        if (preset_name.length !== 0) {
+            document.getElementById('succsave').innerHTML = 
+            `   
+                <h2>Preset Saved Successfully: ${preset_name}</h2>
+                <p>Congratulations, friend</p>
+            `
+            document.getElementById('succsave').style.display = 'block';
+            document.getElementById('failedsave').style.display = 'none';
+            this.save_preset(preset_name);
+        } else {
+            document.getElementById('succsave').style.display = 'none';
+            document.getElementById('failedsave').style.display = 'block';
+        }
+        
+        modal.style.display = "block";
+        //check to see if array updated
+        console.log('presets saved in array: ' + this.saved_presets);
+
+    }
+
+    loadPopUp() {
+        let modal = document.getElementsByClassName("modal")[1];
+        
+        if(this.saved_presets.length == 0){
+            document.getElementById('nullpresets').style.display = 'block';
+        }else{
+            console.log('test');
+            //display array
+            document.getElementById('somepresets').innerHTML = 
+            `
+            <div style="border: 1px dotted black; display: flex; justify-content: space-between; padding: 20px; background-color: aquamarine; margin: 10px;">
+                <div>Test</div> <div><input type="button" value="Load"></div>
+            </div>
+            `
+        }
+        // this.load_preset();
+        modal.style.display = "block";
     }
 
     load_preset() {
@@ -77,41 +130,36 @@ export default class Editor {
             .catch(error => console.error('Error:', error));
     }
 
-    save_preset() {
-        document.getElementById('save_preset_btn').addEventListener('click', () => {
-            const preset_name = document.getElementById('preset_name').value;
-            fetch('http://localhost:8000/save', {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    'name': preset_name,
-                    'cube1_colour': getCubes()[0].material.color.getHexString(), //format is aaaaaa (no #)
-                    'cube2_colour': getCubes()[1].material.color.getHexString(),
-                    'cube3_colour': getCubes()[2].material.color.getHexString()
-                })
+    save_preset(preset_name) {
+        fetch('http://localhost:8000/save', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'name': preset_name,
+                'cube1_colour': this.scene.cubes[0].material.color.getHexString(), //format is aaaaaa (no #)
+                'cube2_colour': this.scene.cubes[1].material.color.getHexString(),
+                'cube3_colour': this.scene.cubes[2].material.color.getHexString()
             })
-                .then(async response => {
-                    if (!response.ok) {
-                        const error = await response.text();
-                        throw new Error(error);
-                    }
-                    return response.json();
-                })
-                .then(data => succ_alert(data)) //html pop up success alert
-                .catch(error => console.error('Error:', error));
-        });
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+                return response.json();
+            })
+            .then(this.saved_presets.push(preset_name)) 
+            .catch(error => console.error('Error:', error));
     }
 
 
-    succ_alert(data) {
-        if (1 > 0) { //data status = success, succ_save popup
-            console.log("placeholder1");
-        } else { // data status failed, fail_save popup
-            console.log("placeholder2");
-        }
-    }
 
+    testfunction(){
+        //FOR TESTING ONLY:
+        this.saved_presets.push('tester save file!');
+    }
 }
+
