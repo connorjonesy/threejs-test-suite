@@ -16,31 +16,34 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     
     def do_GET(self):
-        if self.path == '/load':
+        self.protocol_version = 'HTTP/1.1'
+        if self.path.startswith('/load'):
             try:
-                if '?' in self.path:
-                    from urllib import parse
-                    query_params = parse.parse_qs(parse.urlsplit(self.path).query) #parse query into dictionary
-                    preset_name = query_params.get('preset_name', ['default'])[0]
-                    print(f"Loading preset: {preset_name}")
+                from urllib import parse
+                query_params = parse.parse_qs(parse.urlsplit(self.path).query)
+                preset_name = query_params.get('preset_name', [''])[0]
+                if not preset_name:
+                    raise ValueError("Preset name not provided")
+                    
+                print(f"Loading preset: {preset_name}")
                 
-                    # Retrieve data from db
-                    cube_data = load_preset(preset_name)
-                    
-                    response_body = json.dumps({
-                        'name' : cube_data['name'],
-                        'cube1_colour' : cube_data['cube1']['colour'],
-                        'cube2_colour' : cube_data['cube2']['colour'],
-                        'cube3_colour' : cube_data['cube3']['colour'],
-                        'status': 'success'
-                    }).encode('utf-8')
-                    
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.send_header('Access-Control-Allow-Origin', 'http://localhost:5173')
-                    self.send_header('Content-Length', str(len(response_body)))
-                    self.end_headers()
-                    self.wfile.write(response_body)
+                #Retrieve data from db
+                cube_data = load_preset(preset_name)
+                
+                response_body = json.dumps({
+                    'name' : cube_data['name'],
+                    'cube1_colour' : cube_data['cube1']['colour'],
+                    'cube2_colour' : cube_data['cube2']['colour'],
+                    'cube3_colour' : cube_data['cube3']['colour'],
+                    'status': 'success'
+                }).encode('utf-8')
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', 'http://localhost:5173')
+                self.send_header('Content-Length', str(len(response_body)))
+                self.end_headers()
+                self.wfile.write(response_body)
                 
             except Exception as e:
                 error_msg = json.dumps({'error': str(e), 'status': 'error'}).encode('utf-8')

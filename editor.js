@@ -9,7 +9,7 @@ export default class Editor {
         this.initLoadButton();
         this.initModalHandlers();
         this.saved_presets = []; //string names
-        this.testfunction();
+        //this.testfunction();
     }
     initColorPickers() {
         document.getElementById('colour1').addEventListener('input', (e) => {
@@ -98,20 +98,28 @@ export default class Editor {
         if(this.saved_presets.length == 0){
             document.getElementById('nullpresets').style.display = 'block';
         }else{
-            console.log('test');
             //display array
-            document.getElementById('somepresets').innerHTML = 
+            let newcontent = ``;
+            this.saved_presets.forEach((preset) => {
+                newcontent += 
             `
             <div style="border: 1px dotted black; display: flex; justify-content: space-between; padding: 20px; background-color: aquamarine; margin: 10px;">
-                <div>Test</div> <div><input type="button" value="Load"></div>
+                <div>${preset}</div> <div><input type="button" value="Load" data-preset="${preset}"></div>
             </div>
             `
+            });
+            document.getElementById('somepresets').innerHTML = newcontent;
+            document.querySelectorAll('#somepresets input[type="button"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const preset = button.dataset.preset;
+                    this.load_preset(preset);
+                });
+            });
         }
-        // this.load_preset();
         modal.style.display = "block";
     }
 
-    load_preset() {
+    load_preset(preset_name) {
         const url = new URL('http://localhost:8000/load');
         url.searchParams.append('preset_name', preset_name); // like this http://localhost:8000/load?preset_name=preset_value
 
@@ -126,7 +134,7 @@ export default class Editor {
                 }
                 return response.json();
             })
-            .then(data => succ_alert(data)) //html pop up success alert
+            .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
     }
 
@@ -138,7 +146,7 @@ export default class Editor {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'name': preset_name,
+                'preset_name': preset_name,
                 'cube1_colour': this.scene.cubes[0].material.color.getHexString(), //format is aaaaaa (no #)
                 'cube2_colour': this.scene.cubes[1].material.color.getHexString(),
                 'cube3_colour': this.scene.cubes[2].material.color.getHexString()
@@ -157,9 +165,10 @@ export default class Editor {
 
 
 
-    testfunction(){
-        //FOR TESTING ONLY:
-        this.saved_presets.push('tester save file!');
-    }
+    // testfunction(){
+    //     //FOR TESTING ONLY:
+    //     this.saved_presets.push('tester save file!');
+    //     this.saved_presets.push('tester2');
+    // }
 }
 
