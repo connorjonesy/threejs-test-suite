@@ -8,7 +8,7 @@ def init_db():
         cube_id INTEGER PRIMARY KEY AUTOINCREMENT,
         colour TEXT NOT NULL
     );"""
-    cursor.execute("DROP TABLE IF EXISTS presets;")
+ 
     init_presets_table = """CREATE TABLE IF NOT EXISTS presets (
         preset_id INTEGER PRIMARY KEY AUTOINCREMENT,
         preset_name TEXT
@@ -37,16 +37,20 @@ def init_db():
     default_preset_id = 1
     default_preset_name = 'default'
 
-    cursor.execute("INSERT INTO presets VALUES (?,?);", (default_preset_id, default_preset_name))
-    cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_1_id,default_cube_1_colour))
-    cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_2_id,default_cube_2_colour))
-    cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_3_id,default_cube_3_colour))
-
-    cursor.execute(init_preset_cubes_table)
-    cursor.executemany("INSERT INTO preset_cubes (preset_id, cube_id, position) VALUES (?, ?, ?);",
+  
+    #check if default already exists
+    cursor.execute("SELECT 1 FROM presets WHERE preset_id = ?", (default_preset_id,))
+    if cursor.fetchone() is None:
+        cursor.execute("INSERT INTO presets VALUES (?,?);", (default_preset_id, default_preset_name))
+        cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_1_id, default_cube_1_colour))
+        cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_2_id,default_cube_2_colour))
+        cursor.execute("INSERT INTO cubes VALUES (?,?);", (default_cube_3_id,default_cube_3_colour))
+        cursor.execute(init_preset_cubes_table)
+        cursor.executemany("INSERT INTO preset_cubes (preset_id, cube_id, position) VALUES (?, ?, ?);",
                   [(default_preset_id, default_cube_1_id, 1),
                    (default_preset_id, default_cube_2_id, 2),
                    (default_preset_id, default_cube_3_id, 3)]) 
+    
 
     connection.commit()
     connection.close()
